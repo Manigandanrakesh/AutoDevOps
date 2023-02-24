@@ -1,0 +1,51 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.0.3.RELEASE'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.github.sherter.google-java-format' version '0.8'
+	id "com.diffplug.spotless" version "5.1.1"
+}
+
+group = 'com.auto.devops'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_11
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+build.dependsOn(tasks.googleJavaFormat)
+verifyGoogleJavaFormat.mustRunAfter(tasks.googleJavaFormat)
+
+googleJavaFormat {
+	source = sourceSets*.allJava
+	source 'src/'
+	include '**/*.java'
+	exclude 'src/test/*'
+}
+
+spotless {
+	java {
+		importOrder 'java', 'javax', 'org', 'com', 'com.auto.devops.integration', ''   // A sequence of package names
+
+		removeUnusedImports() // removes any unused imports
+	}
+}
